@@ -24,7 +24,7 @@ st.set_page_config(
 @st.cache_data      # here Streamlit caches the data, to prevent 
                         #loading the DB every time the user interacts
 def load_data():
-    conn = sqlite3.connect("data/database.db")
+    conn = sqlite3.connect("../data/database.db")
     df = pd.read_sql("SELECT * FROM jvc_apartments", conn)
     conn.close()
 
