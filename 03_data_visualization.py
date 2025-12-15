@@ -46,11 +46,13 @@ filtered_df = df.copy() # create copy
 
 # ________________________________________________________________________
 # Setting the app header and context
-st.title("JVC Apartment Rental Analytics")
+st.title("JVC Apartment Rental Market Overview")
+
 st.markdown(
     """
-    Interactive dashboard analyzing apartment rental listings in  
-    **Jumeirah Village Circle (JVC), Dubai**, sourced from Bayut.
+    A data-driven view of **apartment rental listings in Jumeirah Village Circle (JVC), Dubai**.  
+    Built to explore pricing patterns, unit characteristics, and micro-market differences
+    across buildings and unit types.
     """
 )
 
@@ -58,6 +60,11 @@ st.markdown(
 # FILTERS
 #   This is what allows the users to interact.
 #   Filters is way for user to choose values that restrict the dataframe (DB)
+
+st.markdown("### Refine the Market View")
+st.caption("Use the filters below to explore specific unit types, price ranges, and buildings.")
+
+
 
 # Bedrooms
 bedroom_options = sorted(df["bedrooms_clean"].dropna().unique())
@@ -153,9 +160,10 @@ if selected_buildings:
 # METRICS - KPIs. Showed at the top of the dashboard
 col1, col2, col3 = st.columns(3)
 
-col1.metric("Total Listings", len(filtered_df))
-col2.metric("Average Yearly Rent (AED)", f"{filtered_df['price_yearly_aed'].mean():,.0f}")
-col3.metric("Average Area (sqft)", f"{filtered_df['area_clean'].mean():,.0f}")
+col1.metric("Active Listings", len(filtered_df))
+col2.metric("Avg. Annual Rent (AED)", f"{filtered_df['price_yearly_aed'].mean():,.0f}")
+col3.metric("Avg. Unit Size (sqft)", f"{filtered_df['area_clean'].mean():,.0f}")
+
 
 
 # ________________________________________________________________________
@@ -168,7 +176,7 @@ fig_price = px.histogram(
     filtered_df,
     x="price_yearly_aed",
     nbins=30,
-    title="Yearly Rental Price Distribution (AED)"
+    title="Distribution of Annual Rents (AED)"
 )
 
 st.plotly_chart(fig_price, use_container_width=True)
@@ -179,8 +187,8 @@ if len(filtered_df) > 0:
     min_price_val = filtered_df["price_yearly_aed"].min()
     max_price_val = filtered_df["price_yearly_aed"].max()
     st.markdown(
-        f"**Price Insight:** Listings show an average rent of **{avg_price:,.0f} AED**, "
-        f"ranging from **{min_price_val:,.0f} AED** to **{max_price_val:,.0f} AED**."
+        f"**Market Snapshot:** The average annual rent sits at **{avg_price:,.0f} AED**, "
+        f"with listings spanning from **{min_price_val:,.0f} AED** up to **{max_price_val:,.0f} AED**."
     )
 
 
@@ -199,7 +207,7 @@ fig_bed = px.bar(
     avg_price_bed,
     x="bedrooms_clean",
     y="price_yearly_aed",
-    title="Average Yearly Rent by Bedrooms",
+    title="Average Annual Rent by Bedroom Count",
     labels={
         "bedrooms_clean": "Bedrooms",
         "price_yearly_aed": "Avg Yearly Rent (AED)"
@@ -214,10 +222,8 @@ if not avg_price_bed.empty:
         f"{int(row['bedrooms_clean'])} BR ~ {int(row['price_yearly_aed']):,} AED"
         for _, row in avg_price_bed.iterrows()
     ]
-    st.markdown(
-        "**Bedroom Insight:** " +
-        "; ".join(bed_lines)
-    )
+    st.markdown("**Pricing by Unit Type:** " + " · ".join(bed_lines))
+
 
 if len(avg_price_bed) >= 2:
     min_bed = avg_price_bed.iloc[0]
@@ -228,7 +234,7 @@ if len(avg_price_bed) >= 2:
     ) * 100
 
     st.markdown(
-        f"**Market Signal:** Moving from **{int(min_bed['bedrooms_clean'])}BR** "
+        f"**Pricing Gradient:** Moving from **{int(min_bed['bedrooms_clean'])}-bedroom** units "
         f"to **{int(max_bed['bedrooms_clean'])}BR** increases average rent by "
         f"**{pct_diff:.1f}%**."
     )
@@ -245,34 +251,38 @@ value_df = (
     .head(5)
 )
 
-st.subheader("Best Value Buildings (Lowest Price per Sqft)")
+st.subheader("Best Value Buildings")
+st.caption("Ranked by lowest average rent per square foot among filtered listings.")
 for bld, val in value_df.items():
-    st.markdown(f"- **{bld}**: {val:,.0f} AED/sqft")
+    st.markdown(f"- **{bld}** — {val:,.0f} AED / sqft")
 
 
 # ________________________________________________________________________
 # INSIGHTS - AI Generated
-st.subheader("Key Insights")
+st.subheader("Market Takeaways")
 
 
 if len(filtered_df) > 0:
     bld_counts = filtered_df["building"].value_counts().head(5)
     bld_text = ", ".join([f"{b} ({c} listings)" for b, c in bld_counts.items()])
     st.markdown(
-        f"- The average area of filtered listings is **{filtered_df['area_clean'].mean():,.0f} sqft**.\n"
-        f"- Top buildings by listing count: **{bld_text}**.\n"
-        f"- The price per sqft ranges from **{filtered_df['price_per_sqft'].min():,.0f} AED** "
-        f"to **{filtered_df['price_per_sqft'].max():,.0f} AED** with an average of **{filtered_df['price_per_sqft'].mean():,.0f} AED**."
+        f"""
+    - The typical unit size in the selected market is around **{filtered_df['area_clean'].mean():,.0f} sqft**.
+    - Listing concentration is highest in **{bld_text}**, indicating strong rental activity.
+    - Rent efficiency varies meaningfully, with prices per square foot ranging from  
+    **{filtered_df['price_per_sqft'].min():,.0f} AED** to **{filtered_df['price_per_sqft'].max():,.0f} AED**.
+    """
     )
+
 else:
     st.markdown("No listings available with the current filters.")
 
 
-st.subheader("\nWho Is This Dashboard Useful For?")
-
+st.subheader("Who This Dashboard Is For")
 st.markdown("""
-- **Tenants** → Identify fair rental ranges by unit size  
-- **Investors** → Compare yield potential by building  
-- **Property managers** → Monitor market positioning  
-- **Data teams** → Reuse pipeline for other Dubai communities
+- **Tenants** — Understand fair rental ranges by unit size and building  
+- **Investors** — Identify value opportunities and pricing inefficiencies  
+- **Property managers** — Benchmark assets against nearby listings  
+- **Data teams** — Extend the pipeline to other Dubai communities
 """)
+
