@@ -15,8 +15,8 @@ data/backups/
 .DS_Store
 Thumbs.db
 
-# SQLite database
-/data/database.db
+# # SQLite database
+# /data/database.db
 
 # ML models
 /models/best_model.pkl
