@@ -16,7 +16,7 @@ data/backups/
 Thumbs.db
 
 # # SQLite database
-# /data/database.db
+/data/database.db
 
 # ML models
-# /models/best_model.pkl
+/models/best_model.pkl
