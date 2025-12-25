@@ -10,6 +10,7 @@ import streamlit as st # The UI
 import sqlite3          #Our DB
 import pandas as pd     # Data handling. To create the data frame 
 import plotly.express as px     #interactive charts
+import os
 
 #For the ML Model
 import joblib
@@ -29,7 +30,8 @@ st.set_page_config(
 @st.cache_data      # here Streamlit caches the data, to prevent 
                         #loading the DB every time the user interacts
 def load_data():
-    conn = sqlite3.connect("../data/database.db")
+    db_path = os.path.join(os.path.dirname(__file__), "../data/database.db")
+    conn = sqlite3.connect(db_path)
     df = pd.read_sql("SELECT * FROM jvc_apartments", conn)
     conn.close()
 
@@ -51,7 +53,8 @@ df = load_data()
 # oading the ML model
 @st.cache_resource
 def load_model():
-    model = joblib.load("../models/best_model.pkl")
+    model_path = os.path.join(os.path.dirname(__file__), "../models/best_model.pkl")
+    model = joblib.load(model_path)
     return model
 
 model = load_model()
