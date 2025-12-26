@@ -128,15 +128,13 @@ RealEstate_Analytics/
 
 ---
 
-## 📊 Demo
+## Demo
 
-You can showcase the app using screenshots or a screencast:
-
-- **Screencast:** [YouTube / Loom link](Will add shortly)
+- **Demonstration of the Streamlit dashboard:** (https://youtu.be/4OoVJMgdW94)
 
 ---
 
-## 🛠️ Setup & Installation
+## Setup & Installation
 
 1. Clone the repository:
 ```bash
