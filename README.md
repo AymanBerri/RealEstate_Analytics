@@ -130,6 +130,7 @@ RealEstate_Analytics/
 
 ## Demo
 
+- **Deployed Application:** [https://huggingface.co/spaces/profPANDA/realestate_analytics](https://huggingface.co/spaces/profPANDA/realestate_analytics)
 - **Demonstration of the Streamlit dashboard:** (https://youtu.be/4OoVJMgdW94)
 
 ---
